@@ -1,4 +1,4 @@
-# 🎮 Steam ARM on Windows 兼容性检测工具
+# 🎮 Steam ARM on Windows Compatibility Check Tool/Woa兼容性检测工具
 
 一个轻量、极速、免登录的本地开源工具。自动读取你的本地 Steam 游戏库，并与 [WorksOnWoa](https://www.worksonwoa.com/) 官方数据库进行比对，一键获知你的游戏在 Windows on ARM 设备（如骁龙 X Elite）上的运行状态。好吧，也支持epic。
 
