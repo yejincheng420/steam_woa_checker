@@ -5,6 +5,7 @@ import urllib.request
 import zipfile
 import io
 import difflib
+from i18n import tr
 
 DB_FILE = "woa_database.json"
 
@@ -88,6 +89,47 @@ def match_local_games(local_games, woa_data):
                 match_type = f"🔎 模糊匹配 ({original_name})"
 
         # 匹配颜色标签
+        status_lower = status.lower()
+        if "perfect" in status_lower: tag = "perfect"
+        elif "playable" in status_lower: tag = "playable"
+        elif "runs" in status_lower: tag = "runs"
+        elif "unplayable" in status_lower or "fail" in status_lower: tag = "unplayable"
+
+        results.append({
+            "local_name": game,
+            "status": status,
+            "match_type": match_type,
+            "tag": tag,
+            "db_name": original_name
+        })
+        
+    return results
+def match_local_games(local_games, woa_data):
+    results =[]
+    db_normalized_map = {normalize_string(k): k for k in woa_data.keys()}
+    db_norm_keys = list(db_normalized_map.keys())
+
+    for game in local_games:
+        norm_local = normalize_string(game)
+        
+        # 👇👇👇 修改这里：加上 tr() 翻译 👇👇👇
+        status = tr("Unknown (数据库未收录)")
+        match_type = tr("未找到")
+        original_name = game
+        tag = "unknown"
+
+        if norm_local in db_normalized_map:
+            original_name = db_normalized_map[norm_local]
+            status = woa_data[original_name]
+            match_type = tr("🎯 精确匹配")
+        else:
+            matches = difflib.get_close_matches(norm_local, db_norm_keys, n=1, cutoff=0.85)
+            if matches:
+                original_name = db_normalized_map[matches[0]]
+                status = woa_data[original_name]
+                match_type = tr("🔎 模糊匹配 ({name})").format(name=original_name)
+        # 👆👆👆 修改结束 👆👆👆
+
         status_lower = status.lower()
         if "perfect" in status_lower: tag = "perfect"
         elif "playable" in status_lower: tag = "playable"
